@@ -28,11 +28,11 @@ squery(Pool, {find, Coll, Selector, Options},_) ->
     {selected, selected_rows(Norm), row_values(Norm)};
 
 squery(Pool, {update, Coll, Selector, Doc}, false) -> 
-    emongo:update(Pool, Coll, Selector, Doc, false),
+    emongo:update(Pool, Coll, Selector, Doc, false, true),
     {updated, 1};
 
 squery(Pool, {update, Coll, Selector, Doc}, true) -> 
-    parse_result(emongo:update(Pool, Coll, Selector, Doc, false));
+    parse_result(emongo:update_sync(Pool, Coll, Selector, Doc, false, true));
 
 squery(_,_,_) -> 
     {error, "Unknown SQL token"}.
