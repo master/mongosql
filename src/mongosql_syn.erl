@@ -58,8 +58,8 @@ compile({like, Arg1, Arg2}) -> [{compile(Arg1), [{regexp, compile(Arg2), ""}]}];
 %% @todo '$not' with '$regex' is not supported by MongoDB
 %% compile({notlike,_Arg1,_Arg2}) -> false; 
 
-compile({null, Arg1}) -> [{compile(Arg1), [{exists, true}]}];
-compile({notnull, Arg1}) -> [{compile(Arg1), [{exists, false}]}];
+compile({null, Arg1}) -> [{compile(Arg1), [{exists, false}]}];
+compile({notnull, Arg1}) -> [{compile(Arg1), [{exists, true}]}];
 
 compile({in, Arg1, Arg2}) -> [{compile(Arg1), [{in, compile(Arg2)}]}];
 compile({notin, Arg1, Arg2}) -> [{compile(Arg1), [{nin, compile(Arg2)}]}];
