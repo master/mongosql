@@ -25,7 +25,8 @@ squery(Pool, {count, Coll, Selector},_) ->
 squery(Pool, {find, Coll, Selector, Options},_) -> 
     Res = emongo:find_all(Pool, Coll, Selector, Options),
     Norm = filter_null(filter_id(Res)),
-    {selected, selected_rows(Norm), row_values(Norm)};
+    Fields = lists:keyfind(fields, 1, Options),
+    {selected, selected_rows(Norm, Fields), row_values(Norm, Fields)};
 
 squery(Pool, {update, Coll, Selector, Doc}, false) -> 
     emongo:update(Pool, Coll, Selector, Doc, false, true),
@@ -63,19 +64,30 @@ filter_null(Cols) ->
     lists:filter(
       fun(L) -> L /= [] end, Cols).
 
-row_values(Cols) ->
+row_values(Cols, false) ->
     lists:map(
       fun(R) -> lists:map(
 		  fun(C) -> bin_to_str(element(2, C)) end, R)
-      end, Cols).
+      end, Cols);
 
-selected_rows([]) ->
+row_values(Cols, {fields, Fields}) ->
+    Sorted = lists:map(
+	       fun(R) -> lists:map(
+			   fun(K) -> lists:keyfind(K, 1, R) end,
+			   Fields) 
+	       end, Cols),
+    row_values(Sorted, false).
+
+selected_rows([],_) ->
     [];
 
-selected_rows(Cols) ->
+selected_rows(Cols, false) ->
     lists:map(
       fun(C) -> bin_to_str(element(1, C)) end, 
-      hd(Cols)).
+      hd(Cols));
+
+selected_rows(_, {fields, Fields}) ->
+    lists:map(fun(C) -> bin_to_str(C) end, Fields).
 
 bin_to_str(S) when is_bitstring(S) ->
     bitstring_to_list(S);
