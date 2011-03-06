@@ -6,7 +6,7 @@ This is the SQL wrapper for [MongoDB](http://www.mongodb.org) for Erlang. It mim
 INSTALL
 =======
 
-Downloaded and compile MongoSQL and eMongo driver
+Download and compile MongoSQL and eMongo driver
 
 	$ git clone git://github.com/master/emongo.git emongo
 	$ git clone git://github.com/master/mongosql.git mongosql
