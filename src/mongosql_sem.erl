@@ -1,6 +1,6 @@
 %% @author Oleg Smirnov <oleg.smirnov@gmail.com>
-%% @doc MongoSQL syntax compiler
--module(mongosql_syn).
+%% @doc MongoSQL semantic clauses
+-module(mongosql_sem).
 
 -export([compile/1, compile_all/2]).
 

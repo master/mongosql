@@ -109,7 +109,7 @@ fetch(PoolId, Query, Sync) ->
 	{ok, Toks,_} ->
 	    case sql92_parser:parse(Toks) of
 		{ok, Ast} ->
-		    Qs = mongosql_syn:compile(Ast),
+		    Qs = mongosql_sem:compile(Ast),
 		    lists:foldl(fun(Q,_) -> squery(PoolId, Q, Sync) end,
 				{error, "Error executing query"}, Qs);
 		_ ->
