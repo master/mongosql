@@ -35,6 +35,9 @@ squery(Pool, {update, Coll, Selector, Doc}, false) ->
 squery(Pool, {update, Coll, Selector, Doc}, true) -> 
     parse_result(emongo:update_sync(Pool, Coll, Selector, Doc, false, true));
 
+squery(_,[],_) -> 
+    {updated, 0};
+
 squery(_,_,_) -> 
     {error, "Unknown SQL token"}.
 

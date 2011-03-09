@@ -11,12 +11,13 @@ sort_spec sort_key ordering_spec opt_having_clause opt_where_clause
 predicate range_variable scalar_exp scalar_exp_commalist 
 search_cond selection select_stmt sql sql_list table table_exp
 table_ref table_ref_commalist test_for_null_pred update_stmt 
-values_or_select_stmt where_clause opt_limit_clause opt_offset_clause.
+values_or_select_stmt where_clause opt_limit_clause opt_offset_clause
+begin_stmt rollback_stmt commit_stmt.
 
 Terminals '-' '+' '*' '/' '(' ')' ',' ';' '='
 delete insert select update from where into values all null not in count
 like between or and group by distinct having is set offset limit
-order asc desc comp string name integer.
+begin rollback commit order asc desc comp string name integer.
 
 Rootsymbol sql_list.
 
@@ -27,10 +28,19 @@ sql_list -> sql_list sql ';' : flatten(['$1', '$2']).
 
 sql -> manipulative_stmt : '$1'.
 
+manipulative_stmt -> begin_stmt : '$1'.
+manipulative_stmt -> rollback_stmt : '$1'.
+manipulative_stmt -> commit_stmt : '$1'.
 manipulative_stmt -> delete_stmt : '$1'.
 manipulative_stmt -> insert_stmt : '$1'.
 manipulative_stmt -> select_stmt : '$1'.
 manipulative_stmt -> update_stmt : '$1'.
+
+%% Transactions
+
+begin_stmt -> begin : nil.
+rollback_stmt -> rollback : nil.
+commit_stmt -> commit : nil.
 
 %% DELETE
 
