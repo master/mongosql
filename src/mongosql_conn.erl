@@ -81,16 +81,16 @@ row_values(Cols, {fields, Fields}) ->
 	       end, Cols),
     row_values(Sorted, false).
 
+selected_rows(_, {fields, Fields}) ->
+    lists:map(fun(C) -> bin_to_str(C) end, Fields);
+
 selected_rows([],_) ->
     [];
 
 selected_rows(Cols, false) ->
     lists:map(
       fun(C) -> bin_to_str(element(1, C)) end, 
-      hd(Cols));
-
-selected_rows(_, {fields, Fields}) ->
-    lists:map(fun(C) -> bin_to_str(C) end, Fields).
+      hd(Cols)).
 
 bin_to_str(S) when is_bitstring(S) ->
     bitstring_to_list(S);
@@ -108,7 +108,7 @@ start(Host, Port,_User,_Password, Database) ->
 
 %% @doc Execute SQL query
 fetch(PoolId, Query, Sync) ->
-    case sql92_scan:string(Query) of
+    case sql92_scan:string(lists:flatten(Query)) of
 	{ok, Toks,_} ->
 	    case sql92_parser:parse(Toks) of
 		{ok, Ast} ->
