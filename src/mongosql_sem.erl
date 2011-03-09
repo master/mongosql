@@ -2,7 +2,7 @@
 %% @doc MongoSQL semantic clauses
 -module(mongosql_sem).
 
--export([compile/1, compile_all/2]).
+-export([compile/1, compile/2, compile_all/2]).
 
 compile_all([Token|Tail], Acc) -> 
     compile_all(Tail, [compile(Token)|Acc]);
@@ -81,24 +81,33 @@ compile(Token) -> {unknown_token, Token}.
 %% JavaScript semantic
 
 compile({delete, Table, Where}, js) -> 
-    flatten(["db.", compile(Table, js), ".delete(", compile({where, Where}, js), ")"]);
+    flatten(["db.", compile(Table, js), 
+	     ".delete(", compile({where, Where}, js), ")"]);
 
 compile({insert, Table, Fields, Values}, js) -> 
-    flatten(["db.", compile(Table, js), ".save(", 
-	     list_to_obj(lists:zip(compile(Fields, js), compile(Values, js))), ")"]);
+    flatten(["db.", compile(Table, js), 
+	     ".save(", list_to_obj(lists:zip(compile(Fields, js), 
+					     compile(Values, js))), ")"]);
 
-compile({select,_, {count}, {Table, Where,_OrderBy,_GroupBy,_Having,_Limit,_Offset}}, js) -> 
-    flatten(["db.", compile(Table, js), ".count(", compile({where, Where}, js), ")"]);
+compile({select,_, {count}, 
+	 {Table, Where,_OrderBy,_GroupBy,_Having,_Limit,_Offset}}, js) -> 
+    flatten(["db.", compile(Table, js), 
+	     ".count(", compile({where, Where}, js), ")"]);
 
-compile({select,_, Fields, {Table, Where, OrderBy,_GroupBy,_Having, Limit, Offset}}, js) -> 
-    flatten(["db.", compile(Table, js), ".find(", compile({where, Where}, js), ")",
-	    compile(OrderBy), compile(Limit), compile(Offset)]);
+compile({select,_, Fields, 
+	 {Table, Where, OrderBy,_GroupBy,_Having, Limit, Offset}}, js) -> 
+    flatten(["db.", compile(Table, js),
+	     ".find(", compile({where, Where}, js), ",",
+	     list_to_obj(compile(Fields, js)), ")",
+	     compile(OrderBy), compile(Limit), compile(Offset)]);
 
 compile({update, Table, Assign, Where}, js) ->
-    flatten(["db.", compile(Table, js), ".update(", 
-	     compile({where, Where}, js), ", {'$set': ", compile(Assign, js), "}, false, true)"]);
+    flatten(["db.", compile(Table, js), 
+	     ".update(", compile({where, Where}, js),
+	     ", {'$set': ", compile(Assign, js), "}, false, true)"]);
 
-compile({where, Arg}, js) -> flatten(["{ $where: \"",  compile(Arg), "\" } )"]);
+compile({where, Arg}, js) ->
+    flatten(["{ $where: \"",  compile(Arg), "\" } )"]);
 
 compile({orderby, Arg}, js) ->
     flatten([".sort(",  list_to_obj(compile(Arg, js)), ")"]);
@@ -135,12 +144,14 @@ compile({'<>', Arg1, Arg2}, js) ->
     flatten(["(", compile(Arg1, js), ") != (", compile(Arg2, js), ")"]);
 
 compile({between, Arg1, Arg2, Arg3}, js) -> 
-    compile({'and', compile({'>=', Arg1, Arg2}, js), compile({'<=', Arg1, Arg3}, js)}, js);
+    compile({'and',
+	     compile({'>=', Arg1, Arg2}, js), compile({'<=', Arg1, Arg3}, js)}, js);
 compile({notbetween, Arg1, Arg2, Arg3}, js) -> 
     compile({'not', compile({between, Arg1, Arg2, Arg3}, js)}, js);
 
 compile({like, Arg1, Arg2}, js) -> 
-    compile({notnull, flatten([compile(Arg1, js), ".match(", compile(Arg2, js), ")"])}, js);
+    compile({notnull, 
+	     flatten([compile(Arg1, js), ".match(", compile(Arg2, js), ")"])}, js);
 compile({notlike, Arg1, Arg2}, js) ->
     compile({'not', compile({like, Arg1, Arg2}, js)}, js);
 
