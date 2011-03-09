@@ -16,7 +16,10 @@ squery(Pool, {insert, Coll, Doc}, false) ->
     {updated, 1};
 
 squery(Pool, {insert, Coll, Doc}, true) ->
-    parse_result(emongo:insert_sync(Pool, Coll, Doc));
+    case parse_result(emongo:insert_sync(Pool, Coll, Doc)) of
+	{updated, 0} -> {updated, 1};
+	R -> R
+    end;
 
 squery(Pool, {count, Coll, Selector},_) -> 
     Cnt = emongo:count(Pool, Coll, Selector),
