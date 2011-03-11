@@ -4,6 +4,8 @@
 
 -export([start/3, start/5, fetch/3, stop/1]).
 
+-define(POOL_SIZE, 3).
+
 squery(Pool, {delete, Coll, Selector}, false) -> 
     emongo:delete(Pool, Coll, Selector),
     {updated, 1};
@@ -105,9 +107,7 @@ start(Host, Port, Database) ->
     start(Host, Port, "", "", Database).
 
 start(Host, Port,_User,_Password, Database) ->
-    PoolId = list_to_atom(Host ++ integer_to_list(Port) ++ Database),
-    emongo:add_pool(PoolId, Host, Port, Database, 1),
-    {ok, PoolId}.
+    emongo:add_pool(make_ref(), Host, Port, Database, ?POOL_SIZE).
 
 %% @doc Execute SQL query
 fetch(PoolId, Query, Sync) ->
@@ -128,5 +128,3 @@ fetch(PoolId, Query, Sync) ->
 %% @doc Disconnect from database
 stop(PoolId) ->
     emongo:del_pool(PoolId).    
-		
-    
