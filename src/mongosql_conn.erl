@@ -74,8 +74,9 @@ filter_null(Cols) ->
 
 row_values(Cols, false) ->
     lists:map(
-      fun(R) -> lists:map(
-		  fun(C) -> bin_to_str(element(2, C)) end, R)
+      fun(R) -> list_to_tuple(
+		  lists:map(
+		    fun(C) -> bin_to_str(element(2, C)) end, R))
       end, Cols);
 
 row_values(Cols, {fields, Fields}) ->
