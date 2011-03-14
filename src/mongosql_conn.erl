@@ -24,8 +24,10 @@ squery(Pool, {insert, Coll, Doc}, true) ->
     end;
 
 squery(Pool, {count, Coll, Selector},_) -> 
-    Cnt = emongo:count(Pool, Coll, Selector),
-    {selected,["count(*)"], [{Cnt}]};
+    case emongo:count(Pool, Coll, Selector) of
+	undefined -> {selected,["count(*)"], [{0}]};
+	Cnt -> {selected,["count(*)"], [{Cnt}]}
+    end;
 
 squery(Pool, {find, Coll, Selector, Options},_) -> 
     Res = emongo:find_all(Pool, Coll, Selector, Options),
