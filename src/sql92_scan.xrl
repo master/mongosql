@@ -14,7 +14,6 @@ Rules.
 {C}     : {token, {comp, TokenLine, atom(TokenChars)}}.
 {D}+    : {token, {integer, TokenLine, integer(TokenChars)}}.
 {P}     : {token, {atom(TokenChars), TokenLine}}.
-%% ({U}|_){A}*  :  {token,{var,TokenLine,list_to_atom(TokenChars)}}.
 '(\\\^.|\\.|[^'])*' : S = string_gen(strip(TokenChars, TokenLen)),
  		      {token, {string, TokenLine, bitstring(S)}}.
 "(\\\^.|\\.|[^"])*" : S = string_gen(strip(TokenChars, TokenLen)),
