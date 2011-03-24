@@ -1,0 +1,10 @@
+{application, mongosql,
+ [{description, "MongoSQL"},
+  {vsn, "0.0.1"},
+  {modules, [mongosql_conn,
+             mongosql_sem,
+             sql92_parser,
+             sql92_scan]},
+  {registered,[]},
+  {applications, [kernel,stdlib]},
+  {env, []}]}.
