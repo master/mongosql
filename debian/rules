@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+
+PKG_NAME=mongosql
+VERSION=0.0.1
+DEB_DESTDIR=$(CURDIR)/debian/$(PKG_NAME)
+LIB_DIR=$(DEB_DESTDIR)/usr/lib/erlang/lib/$(PKG_NAME)-$(VERSION)
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	mkdir -p $(LIB_DIR)/ebin
+	ls ebin/*.beam
+	pwd
+	for i in ebin/*.beam ebin/*.app; do install $$i $(LIB_DIR)/$$i ; done
+	rm $(LIB_DIR)/ebin/mongosql_cli.beam

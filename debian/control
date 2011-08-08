@@ -1,0 +1,13 @@
+Source: mongosql
+Section: libs
+Priority: extra
+Maintainer: Oleg Smirnov <oleg.smirnov@gmail.com>
+Build-Depends: debhelper (>= 7.3~), erlang-base, erlang-parsetools
+Standards-Version: 3.9.1
+Homepage: https://github.com/master/mongosql
+
+Package: mongosql
+Architecture: any
+Depends: erlang
+Suggests: mongodb
+Description: MongoDB SQL wrapper
