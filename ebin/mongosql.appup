@@ -1,0 +1,4 @@
+{"0.0.2",
+ [{"0.0.1", [{load_module, mongosql_conn}]}],
+ [{"0.0.1", [{load_module, mongosql_conn}]}]
+}.

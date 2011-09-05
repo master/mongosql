@@ -1,6 +1,6 @@
 {application, mongosql,
  [{description, "MongoSQL"},
-  {vsn, "0.0.1"},
+  {vsn, "0.0.2"},
   {modules, [mongosql_conn,
              mongosql_sem,
              sql92_parser,

@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 PKG_NAME=mongosql
-VERSION=0.0.1
+VERSION=0.0.2
 DEB_DESTDIR=$(CURDIR)/debian/$(PKG_NAME)
 LIB_DIR=$(DEB_DESTDIR)/usr/lib/erlang/lib/$(PKG_NAME)-$(VERSION)
 

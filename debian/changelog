@@ -1,3 +1,9 @@
+mongosql (0.0.2-1) unstable; urgency=low
+
+  * Fixed bug in count(*) return.
+
+ -- Oleg Smirnov <oleg.smirnov@gmail.com>  Mon, 05 Sep 2011 15:53:11 +0300
+
 mongosql (0.0.1-1) unstable; urgency=low
 
   * initial prerelease
