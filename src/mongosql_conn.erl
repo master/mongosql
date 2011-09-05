@@ -25,8 +25,9 @@ squery(Pool, {insert, Coll, Doc}, true) ->
 
 squery(Pool, {count, Coll, Selector},_) -> 
     case emongo:count(Pool, Coll, Selector) of
-	undefined -> {selected,["count(*)"], [{"0"}]};
-	Cnt -> {selected,["count(*)"], [{Cnt}]}
+	Cnt when is_integer(Cnt) ->
+            {selected,["count(*)"], [{integer_to_list(Cnt)}]};
+        _Else -> {selected,["count(*)"], [{"0"}]}
     end;
 
 squery(Pool, {find, Coll, Selector, Options},_) -> 
