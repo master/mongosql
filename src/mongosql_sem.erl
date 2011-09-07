@@ -80,7 +80,6 @@ compile(Token) when is_list(Token) -> Token;
 compile(Token) -> {unknown_token, Token}.
 
 like_to_re(Str) when is_binary(Str) ->
-    io:format(""),
     Re = binary:replace(Str, <<"%">>, <<".*">>, [global]),
     <<"^", Re/binary, "$">>.
 notlike_to_re(Str) when is_binary(Str) ->
