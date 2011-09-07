@@ -182,7 +182,7 @@ between_pred -> scalar_exp not between scalar_exp and scalar_exp
 between_pred -> scalar_exp between scalar_exp and scalar_exp
 	      : {between, '$1', '$3', '$5'}.
 
-like_pred -> scalar_exp not like atom : {'not', {like, '$1', '$4'}}.
+like_pred -> scalar_exp not like atom : {notlike, '$1', '$4'}.
 like_pred -> scalar_exp like atom : {like, '$1', '$3'}.
 
 test_for_null_pred -> column_ref is not null : {notnull, '$1'}.

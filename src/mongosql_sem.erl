@@ -54,9 +54,10 @@ compile({between, Arg1, Arg2, Arg3}) ->
 compile({notbetween, Arg1, Arg2, Arg3}) -> 
     [{compile(Arg1), [{gte, compile(Arg3)}, {lte, compile(Arg2)}]}];
 
-compile({like, Arg1, Arg2}) -> [{compile(Arg1), [{regexp, compile(Arg2), ""}]}];
-%% @todo '$not' with '$regex' is not supported by MongoDB
-%% compile({notlike,_Arg1,_Arg2}) -> false; 
+compile({like, Arg1, Arg2}) -> 
+    [{compile(Arg1), {regexp, like_to_re(compile(Arg2)), ""}}];
+compile({notlike, Arg1, Arg2}) -> 
+    [{compile(Arg1), {regexp, notlike_to_re(compile(Arg2)), ""}}];
 
 compile({null, Arg}) -> [{compile(Arg), [{exists, false}]}];
 compile({notnull, Arg}) -> [{compile(Arg), [{exists, true}]}];
@@ -77,3 +78,12 @@ compile(Token) when is_bitstring(Token) -> Token;
 compile(Token) when is_list(Token) -> Token;
 
 compile(Token) -> {unknown_token, Token}.
+
+like_to_re(Str) when is_binary(Str) ->
+    io:format(""),
+    Re = binary:replace(Str, <<"%">>, <<".*">>, [global]),
+    <<"^", Re/binary, "$">>.
+notlike_to_re(Str) when is_binary(Str) ->
+    Re = binary:replace(Str, <<"%">>, <<".*">>, [global]),
+    <<"^(?!(", Re/binary ,"))">>.
+
