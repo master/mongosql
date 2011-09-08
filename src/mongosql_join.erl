@@ -6,6 +6,8 @@
 
 -export([natural/2, equi/3, cross/2]).
 
+-include_lib("eunit/include/eunit.hrl").
+
 %% SELECT * FROM employee NATURAL JOIN department;
 natural(R, S) ->
     R_Set = ordsets:from_list(columns(R)),
@@ -93,4 +95,12 @@ test_() ->
                   [["31", "Sales"], 
                    ["33", "Engineering"],
                    ["34", "Clerical"], 
-                   ["35", "Marketing"]]}.
+                   ["35", "Marketing"]]},
+    Natural = {selected, ["LastName","DepartmentID","DepartmentName"],
+               [["Rafferty", "31", "Sales"],
+                ["Jones", "33", "Engineering"],
+                ["Steinberg", "33", "Engineering"],
+                ["Robinson", "34", "Clerical"],
+                ["Smith", "34", "Clerical"]]},
+    [?_assertEqual(natural(Employee, Department), Natural),
+     ?_assertEqual(equi(Employee, Department, ["DepartmentID"]), Natural)].
