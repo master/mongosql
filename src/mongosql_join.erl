@@ -20,23 +20,22 @@ equi(R, S, Using) ->
     S_Col = columns(S),
     Preds = lists:map(fun(Key) -> R_Index = index_of(Key, R_Col),
                                   S_Index = index_of(Key, S_Col),
-                                  fun({R_V, S_V}) ->
-                                          lists:nth(R_Index, R_V) ==
-                                              lists:nth(S_Index, S_V) 
+                                  fun({R_V, S_V}) -> element(R_Index, R_V) ==
+                                                         element(S_Index, S_V)
                                   end
                       end, Using),
     Predicate = fun({R_V, S_V}) -> all(Preds, {R_V, S_V}) end,
     Dups = dups(S_Col, R_Col),
-    Columns = R_Col ++ dedup(S_Col, Dups),
-    Values = [R_V ++ dedup(S_V, Dups) || R_V <- values(R), S_V <- values(S),
+    Columns = concat2(R_Col, dedup(S_Col, Dups)),
+    Values = [concat2(R_V, dedup(S_V, Dups)) || R_V <- values(R), S_V <- values(S),
                                          Predicate({R_V, S_V})],
     {selected, Columns, Values}.
 
 %% SELECT * FROM employee CROSS JOIN department;
 %% SELECT * FROM employee, department;
 cross(R, S) ->
-    Columns = columns(R) ++ columns(S),
-    Values = [R_V ++ S_V || R_V <- values(R), S_V <- values(S)],
+    Columns = concat2(columns(R), columns(S)),
+    Values = [concat2(R_V, S_V) || R_V <- values(R), S_V <- values(S)],
     {selected, Columns, Values}.
 
 outer() ->
@@ -72,10 +71,17 @@ dups(In, From) ->
     Set = sets:from_list(From),
     lists:map(fun(Element) -> not sets:is_element(Element, Set) end, In).
 
-dedup(List, Dups) ->
+dedup(List, Dups) when is_list(List) ->
     Dedup = lists:filter(fun(Tuple) ->
                                  element(2, Tuple) end, lists:zip(List, Dups)),
-    lists:map(fun(Tuple) -> element(1, Tuple) end, Dedup).
+    lists:map(fun(Tuple) -> element(1, Tuple) end, Dedup);
+dedup(List, Dups) when is_tuple(List) ->
+    list_to_tuple(dedup(tuple_to_list(List), Dups)).
+
+concat2(A, B) when is_list(A), is_list(B) ->
+    lists:concat([A, B]);
+concat2(A, B) when is_tuple(A), is_tuple(B) ->
+    list_to_tuple(concat2(tuple_to_list(A), tuple_to_list(B))).
 
 all(Predicates, Arg) ->
     lists:foldl(fun(Pred, Res) -> Pred(Arg) and Res end, true, Predicates).
@@ -83,24 +89,44 @@ all(Predicates, Arg) ->
 any(Predicates, Arg) ->
     lists:foldl(fun(Pred, Res) -> Pred(Arg) or Res end, false, Predicates).
 
-test_() ->
+test_setup() ->
     Employee = {selected, ["LastName", "DepartmentID"], 
-                [["Rafferty", "31"],
-                 ["Jones", "33"],
-                 ["Steinberg", "33"],
-                 ["Robinson", "34"],
-                 ["Smith", "34"],
-                 ["John", "NULL"]]},
+                [{"Rafferty", "31"},
+                 {"Jones", "33"},
+                 {"Steinberg", "33"},
+                 {"Robinson", "34"},
+                 {"Smith", "34"},
+                 {"John", "NULL"}]},
     Department = {selected, ["DepartmentID", "DepartmentName"], 
-                  [["31", "Sales"], 
-                   ["33", "Engineering"],
-                   ["34", "Clerical"], 
-                   ["35", "Marketing"]]},
+                  [{"31", "Sales"},
+                   {"33", "Engineering"},
+                   {"34", "Clerical"}, 
+                   {"35", "Marketing"}]},
+    {Employee, Department}.
+
+cross_test_() ->
+    {Employee, Department} = test_setup(),
+    Cross1 = {"Rafferty","31","31","Sales"},
+    [?_assertEqual(length(values(cross(Employee, Department))),
+                   length(values(Employee)) * length(values(Department))),
+     ?_assertEqual(hd(values(cross(Employee, Department))), Cross1)].
+
+equi_test() ->
+    {Employee, Department} = test_setup(),
+    Equi = {selected, ["LastName","DepartmentID","DepartmentName"],
+               [{"Rafferty", "31", "Sales"},
+                {"Jones", "33", "Engineering"},
+                {"Steinberg", "33", "Engineering"},
+                {"Robinson", "34", "Clerical"},
+                {"Smith", "34", "Clerical"}]},
+    ?_assertEqual(equi(Employee, Department, ["DepartmentID"]), Equi).
+
+natural_test() ->
+    {Employee, Department} = test_setup(),
     Natural = {selected, ["LastName","DepartmentID","DepartmentName"],
-               [["Rafferty", "31", "Sales"],
-                ["Jones", "33", "Engineering"],
-                ["Steinberg", "33", "Engineering"],
-                ["Robinson", "34", "Clerical"],
-                ["Smith", "34", "Clerical"]]},
-    [?_assertEqual(natural(Employee, Department), Natural),
-     ?_assertEqual(equi(Employee, Department, ["DepartmentID"]), Natural)].
+               [{"Rafferty", "31", "Sales"},
+                {"Jones", "33", "Engineering"},
+                {"Steinberg", "33", "Engineering"},
+                {"Robinson", "34", "Clerical"},
+                {"Smith", "34", "Clerical"}]},
+    ?_assertEqual(natural(Employee, Department), Natural).
