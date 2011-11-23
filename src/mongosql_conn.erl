@@ -52,7 +52,7 @@ squery(_,_,_) ->
 parse_result(Result) ->
     Res = lists:flatten(Result),
     case lists:keyfind(<<"err">>, 1, Res) of
-	{<<"err">>, undefined} ->
+	{<<"err">>, null} ->
 	    case lists:keyfind(<<"n">>, 1, Res) of
 		{<<"n">>, N} ->
 		    {updated, N};
