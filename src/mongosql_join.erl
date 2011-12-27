@@ -5,6 +5,7 @@
 -module(mongosql_join).
 
 -export([natural/2, equi/3, cross/2]).
+-compile([nowarn_unused_function]).
 
 -include_lib("eunit/include/eunit.hrl").
 
