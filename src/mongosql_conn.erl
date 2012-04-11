@@ -2,7 +2,7 @@
 %% @doc MongoSQL connection
 -module(mongosql_conn).
 
--export([start/3, fetch/3, stop/1]).
+-export([start/2, start/3, fetch/3, stop/1]).
 
 -define(POOL_SIZE, 3).
 
