@@ -21,7 +21,7 @@ USAGE
 	$ erl -pa emongo/ebin mongosql/ebin
 
 	> application:start(emongo).
-	> {ok, Pool} = mongosql_conn:start("127.0.0.1", 27017, "test1").
+	> {ok, Pool} = mongosql_conn:start({"127.0.0.1", 27017}, "test1").
 	> mongosql_conn:fetch(Pool, "insert into tbl1 col1, col2 values ('string', 1);", false).
 	{updated,1}
 	> mongosql_conn:fetch(Pool, "select count(*) from tbl1;", false). 

@@ -108,10 +108,10 @@ bin_to_str(S) -> S.
 
 %% @doc Connect to database
 start(Host, Port, Database) ->
-    start(Host, Port, "", "", Database).
+    start([{Host, Port}], Database).
 
-start(Host, Port,_User,_Password, Database) ->
-    emongo:add_pool(make_ref(), Host, Port, Database, ?POOL_SIZE).
+start(Urls, Database) when is_list(Urls) ->
+    emongo:add_pool(make_ref(), Urls, Database, ?POOL_SIZE).
 
 %% @doc Execute SQL query
 fetch(PoolId, Query, Sync) ->
