@@ -33,3 +33,7 @@ USAGE
 	> mongosql_conn:fetch(Pool, "select count(*) from tbl1;", false).        
 	{selected,["count(*)"],[{"0"}]}
 	> mongosql_conn:stop(Pool).
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/master/mongosql/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
